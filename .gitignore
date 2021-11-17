@@ -1,0 +1,57 @@
+/src/parser/ElasticSQL.g4
+
+############## Eclipse.gitignore #############
+.metadata
+log/
+logs/
+tmp/
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.settings/
+.loadpath
+.recommenders
+PID
+pid
+cmd
+sina_news_search
+sync_circle
+
+# Eclipse Core
+.project
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+.DS_Store
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+
+### VS Code ###
+.vscode/
+
+##### private
+/log/
+/conf/elastic-sql-rest-knn.yml
+/conf/elastic-sql-rest-cms.yml
+/doc/antlr4_gen_code.md
+/src/parser/note.txt

@@ -1,0 +1,23 @@
+################ elasticsearch client config##################
+es_client:
+  http_hosts: [http://10.41.11.120:9202,http://10.41.11.120:9202]
+
+
+# query statement config
+query:
+  # 默认返回结果条数
+  default_size: 5
+  scroll_size: 5000
+  scroll_keep_time: 300000
+  scroll_slice_max: 10
+  scroll_slice_threshold: 100000
+
+agg:
+  # the default aggregation statement top N
+  default_size: 200
+  # the default aggregation statement distinct precision
+  distinct_precision: 3000
+
+
+# position where file store
+data_dir: /Users/liucheng/Downloads
