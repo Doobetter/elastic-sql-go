@@ -55,3 +55,5 @@ sync_circle
 /conf/elastic-sql-rest-cms.yml
 /doc/antlr4_gen_code.md
 /src/parser/note.txt
+elastic_sql_query_test.go
+elastic_sql_client_test.go

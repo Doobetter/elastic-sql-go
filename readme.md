@@ -1,4 +1,4 @@
-elastic-sql-go使用类SQL查询、检索Elasticsearch.
+elastic-sql-go使用类SQL查询、检索Elasticsearch、OpenSearch.
 
 Thanks to antlr4/runtime/Go/antlr、olivere/elastic ...
 
