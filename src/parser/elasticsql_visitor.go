@@ -17,6 +17,9 @@ type ElasticSQLVisitor interface {
 	// Visit a parse tree produced by ElasticSQLParser#queryStatement.
 	VisitQueryStatement(ctx *QueryStatementContext) interface{}
 
+	// Visit a parse tree produced by ElasticSQLParser#selectItem.
+	VisitSelectItem(ctx *SelectItemContext) interface{}
+
 	// Visit a parse tree produced by ElasticSQLParser#collapseExpr.
 	VisitCollapseExpr(ctx *CollapseExprContext) interface{}
 
@@ -31,9 +34,6 @@ type ElasticSQLVisitor interface {
 
 	// Visit a parse tree produced by ElasticSQLParser#innerHit.
 	VisitInnerHit(ctx *InnerHitContext) interface{}
-
-	// Visit a parse tree produced by ElasticSQLParser#scriptFields.
-	VisitScriptFields(ctx *ScriptFieldsContext) interface{}
 
 	// Visit a parse tree produced by ElasticSQLParser#scriptField.
 	VisitScriptField(ctx *ScriptFieldContext) interface{}
@@ -289,9 +289,6 @@ type ElasticSQLVisitor interface {
 
 	// Visit a parse tree produced by ElasticSQLParser#indexName.
 	VisitIndexName(ctx *IndexNameContext) interface{}
-
-	// Visit a parse tree produced by ElasticSQLParser#asIdentifier.
-	VisitAsIdentifier(ctx *AsIdentifierContext) interface{}
 
 	// Visit a parse tree produced by ElasticSQLParser#strictIdentifier.
 	VisitStrictIdentifier(ctx *StrictIdentifierContext) interface{}

@@ -17,6 +17,9 @@ type ElasticSQLListener interface {
 	// EnterQueryStatement is called when entering the queryStatement production.
 	EnterQueryStatement(c *QueryStatementContext)
 
+	// EnterSelectItem is called when entering the selectItem production.
+	EnterSelectItem(c *SelectItemContext)
+
 	// EnterCollapseExpr is called when entering the collapseExpr production.
 	EnterCollapseExpr(c *CollapseExprContext)
 
@@ -31,9 +34,6 @@ type ElasticSQLListener interface {
 
 	// EnterInnerHit is called when entering the innerHit production.
 	EnterInnerHit(c *InnerHitContext)
-
-	// EnterScriptFields is called when entering the scriptFields production.
-	EnterScriptFields(c *ScriptFieldsContext)
 
 	// EnterScriptField is called when entering the scriptField production.
 	EnterScriptField(c *ScriptFieldContext)
@@ -290,9 +290,6 @@ type ElasticSQLListener interface {
 	// EnterIndexName is called when entering the indexName production.
 	EnterIndexName(c *IndexNameContext)
 
-	// EnterAsIdentifier is called when entering the asIdentifier production.
-	EnterAsIdentifier(c *AsIdentifierContext)
-
 	// EnterStrictIdentifier is called when entering the strictIdentifier production.
 	EnterStrictIdentifier(c *StrictIdentifierContext)
 
@@ -317,6 +314,9 @@ type ElasticSQLListener interface {
 	// ExitQueryStatement is called when exiting the queryStatement production.
 	ExitQueryStatement(c *QueryStatementContext)
 
+	// ExitSelectItem is called when exiting the selectItem production.
+	ExitSelectItem(c *SelectItemContext)
+
 	// ExitCollapseExpr is called when exiting the collapseExpr production.
 	ExitCollapseExpr(c *CollapseExprContext)
 
@@ -331,9 +331,6 @@ type ElasticSQLListener interface {
 
 	// ExitInnerHit is called when exiting the innerHit production.
 	ExitInnerHit(c *InnerHitContext)
-
-	// ExitScriptFields is called when exiting the scriptFields production.
-	ExitScriptFields(c *ScriptFieldsContext)
 
 	// ExitScriptField is called when exiting the scriptField production.
 	ExitScriptField(c *ScriptFieldContext)
@@ -589,9 +586,6 @@ type ElasticSQLListener interface {
 
 	// ExitIndexName is called when exiting the indexName production.
 	ExitIndexName(c *IndexNameContext)
-
-	// ExitAsIdentifier is called when exiting the asIdentifier production.
-	ExitAsIdentifier(c *AsIdentifierContext)
 
 	// ExitStrictIdentifier is called when exiting the strictIdentifier production.
 	ExitStrictIdentifier(c *StrictIdentifierContext)

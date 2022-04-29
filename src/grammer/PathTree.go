@@ -8,8 +8,8 @@ import (
 )
 
 const (
-	PATH_SEP_CHAR = '.'
-	PATH_SEP_STR  = "."
+	PATH_SEP_CHAR = '$'
+	PATH_SEP_STR  = "$"
 )
 
 // 无nested类型的logic无PathTreee

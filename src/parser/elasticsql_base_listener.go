@@ -39,6 +39,12 @@ func (s *BaseElasticSQLListener) EnterQueryStatement(ctx *QueryStatementContext)
 // ExitQueryStatement is called when production queryStatement is exited.
 func (s *BaseElasticSQLListener) ExitQueryStatement(ctx *QueryStatementContext) {}
 
+// EnterSelectItem is called when production selectItem is entered.
+func (s *BaseElasticSQLListener) EnterSelectItem(ctx *SelectItemContext) {}
+
+// ExitSelectItem is called when production selectItem is exited.
+func (s *BaseElasticSQLListener) ExitSelectItem(ctx *SelectItemContext) {}
+
 // EnterCollapseExpr is called when production collapseExpr is entered.
 func (s *BaseElasticSQLListener) EnterCollapseExpr(ctx *CollapseExprContext) {}
 
@@ -68,12 +74,6 @@ func (s *BaseElasticSQLListener) EnterInnerHit(ctx *InnerHitContext) {}
 
 // ExitInnerHit is called when production innerHit is exited.
 func (s *BaseElasticSQLListener) ExitInnerHit(ctx *InnerHitContext) {}
-
-// EnterScriptFields is called when production scriptFields is entered.
-func (s *BaseElasticSQLListener) EnterScriptFields(ctx *ScriptFieldsContext) {}
-
-// ExitScriptFields is called when production scriptFields is exited.
-func (s *BaseElasticSQLListener) ExitScriptFields(ctx *ScriptFieldsContext) {}
 
 // EnterScriptField is called when production scriptField is entered.
 func (s *BaseElasticSQLListener) EnterScriptField(ctx *ScriptFieldContext) {}
@@ -588,12 +588,6 @@ func (s *BaseElasticSQLListener) EnterIndexName(ctx *IndexNameContext) {}
 
 // ExitIndexName is called when production indexName is exited.
 func (s *BaseElasticSQLListener) ExitIndexName(ctx *IndexNameContext) {}
-
-// EnterAsIdentifier is called when production asIdentifier is entered.
-func (s *BaseElasticSQLListener) EnterAsIdentifier(ctx *AsIdentifierContext) {}
-
-// ExitAsIdentifier is called when production asIdentifier is exited.
-func (s *BaseElasticSQLListener) ExitAsIdentifier(ctx *AsIdentifierContext) {}
 
 // EnterStrictIdentifier is called when production strictIdentifier is entered.
 func (s *BaseElasticSQLListener) EnterStrictIdentifier(ctx *StrictIdentifierContext) {}

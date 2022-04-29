@@ -20,6 +20,10 @@ func (v *BaseElasticSQLVisitor) VisitQueryStatement(ctx *QueryStatementContext) 
 	return v.VisitChildren(ctx)
 }
 
+func (v *BaseElasticSQLVisitor) VisitSelectItem(ctx *SelectItemContext) interface{} {
+	return v.VisitChildren(ctx)
+}
+
 func (v *BaseElasticSQLVisitor) VisitCollapseExpr(ctx *CollapseExprContext) interface{} {
 	return v.VisitChildren(ctx)
 }
@@ -37,10 +41,6 @@ func (v *BaseElasticSQLVisitor) VisitMemSort(ctx *MemSortContext) interface{} {
 }
 
 func (v *BaseElasticSQLVisitor) VisitInnerHit(ctx *InnerHitContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseElasticSQLVisitor) VisitScriptFields(ctx *ScriptFieldsContext) interface{} {
 	return v.VisitChildren(ctx)
 }
 
@@ -381,10 +381,6 @@ func (v *BaseElasticSQLVisitor) VisitIndexIdentifier(ctx *IndexIdentifierContext
 }
 
 func (v *BaseElasticSQLVisitor) VisitIndexName(ctx *IndexNameContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseElasticSQLVisitor) VisitAsIdentifier(ctx *AsIdentifierContext) interface{} {
 	return v.VisitChildren(ctx)
 }
 

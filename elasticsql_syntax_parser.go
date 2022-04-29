@@ -72,35 +72,38 @@ func (p *MyElasticVisitor) VisitQueryStatement(ctx *parser.QueryStatementContext
 		// 通过得分过滤
 		stat.MinScore, _ = strconv.ParseFloat(ctx.GetMinScore().GetText(), 64)
 	}
-	for _, f := range ctx.GetFields() {
-		stat.Fields = append(stat.Fields, f.GetText())
-	}
-	if ctx.GetHlightFields() != nil {
-		stat.Highlight = grammer.NewHighlightAdapter()
-		hgCtx := ctx.GetHlightFields().(*parser.HighlightContext)
-		var fieldSchema []string
-		for _, fieldAs := range hgCtx.AllFieldAs() {
-			f := fieldAs.GetField().GetText()
-			as := f
-			if fieldAs.GetAs() != nil {
-				as = fieldAs.GetAs().GetText()
+	for _, itemI := range ctx.GetSelectItems() {
+		item:= itemI.(*parser.SelectItemContext)
+		if item.FieldIdentifier() != nil{
+			f:=item.GetText()
+			stat.Fields = append(stat.Fields, f)
+		}else if item.Highlight() != nil{
+			if stat.Highlight == nil{
+				stat.Highlight = grammer.NewHighlightAdapter()
 			}
-			stat.Highlight.FieldAndSchema[f] = as
-			fieldSchema = append(fieldSchema, as)
+			hgCtx := item.Highlight().(*parser.HighlightContext)
+			var fieldSchema []string
+			for _, fieldAs := range hgCtx.AllFieldAs() {
+				f := fieldAs.GetField().GetText()
+				as := f
+				if fieldAs.GetAs() != nil {
+					as = fieldAs.GetAs().GetText()
+				}
+				stat.Highlight.FieldAndSchema[f] = as
+				fieldSchema = append(fieldSchema, as)
 
-		}
-		//if hgCtx.GetTag() != nil{
-		//	stat.Highlight.Tag = quotaStr(hgCtx.GetTag().GetText())
-		//}
-	}
-	// todo expr field
-	if ctx.GetExprFields() != nil {
-		for _, expr := range ctx.GetExprFields().GetExprField() {
-			as := expr.GetAs().GetText()
-			scriptAdapter := p.VisitScriptPhrase(expr.GetScript().(*parser.ScriptPhraseContext)).(*grammer.ScriptAdapter)
+			}
+		}else if item.ScriptField() != nil {
+			if stat.ExprFields == nil {
+				stat.ExprFields = make(map[string]*grammer.ScriptAdapter)
+			}
+			sfCtx := item.ScriptField().(*parser.ScriptFieldContext)
+			as := sfCtx.GetAs().GetText()
+			scriptAdapter := p.VisitScriptPhrase(sfCtx.GetScript().(*parser.ScriptPhraseContext)).(*grammer.ScriptAdapter)
 			stat.ExprFields[as] = scriptAdapter
 		}
 	}
+
 	for _, indexCtx := range ctx.GetIndexes() {
 
 		indexName := p.VisitIndexName(indexCtx.GetIndex().(*parser.IndexNameContext)).(string)
@@ -259,8 +262,9 @@ func (v *MyElasticVisitor) VisitTermCompare(ctx *parser.TermCompareContext) inte
 	field := ctx.GetField().GetText()
 	expr.Paths = grammer.GetPathArray(field)
 	// 对于对象类型处理
-	expr.Field = strings.ReplaceAll(field, "$", ".")
-	operator := ctx.GetOperator().GetText()
+	// expr.Field = strings.ReplaceAll(field, "$", ".")
+	expr.Field = field
+		operator := ctx.GetOperator().GetText()
 	if "!=" == operator || "<>" == operator {
 		expr.Not = true
 	}
@@ -275,8 +279,8 @@ func (v *MyElasticVisitor) VisitBtwCompare(ctx *parser.BtwCompareContext) interf
 	field := ctx.GetField().GetText()
 	expr.Paths = grammer.GetPathArray(field)
 	// 对于对象类型处理
-	expr.Field = strings.ReplaceAll(field, "$", ".")
-
+	// expr.Field = strings.ReplaceAll(field, "$", ".")
+	expr.Field = field
 	if ctx.GetGte() != nil {
 		expr.Gte = true
 	}
@@ -298,7 +302,8 @@ func (v *MyElasticVisitor) VisitFunctionalCompare(ctx *parser.FunctionalCompareC
 			field := f.GetText()
 			expr.Paths = grammer.GetPathArray(field)
 			// 对于对象类型处理
-			expr.Field = strings.ReplaceAll(field, "$", ".")
+			// expr.Field = strings.ReplaceAll(field, "$", ".")
+			expr.Field = field
 		}
 		if b := funcCtx.GetBoost(); b != nil {
 			expr.Boost, _ = strconv.ParseFloat(b.GetText(), 64)
@@ -439,4 +444,16 @@ func (v *MyElasticVisitor) VisitParamValues(ctx *parser.ParamValuesContext) inte
 		values = append(values, v.VisitParam(value.(*parser.ParamContext)))
 	}
 	return values
+}
+
+func (v *MyElasticVisitor)VisitAnalysisStatement( ctx *parser.AnalysisStatementContext) interface{}  {
+
+	return nil
+}
+
+// VisitAggStatement group by 部分解析
+func (v *MyElasticVisitor) VisitAggStatement(ctx *parser.AggStatementContext) interface{} {
+
+
+	return v.VisitChildren(ctx)
 }

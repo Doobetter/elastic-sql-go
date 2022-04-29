@@ -2,6 +2,7 @@ package basic
 
 import (
 	"context"
+	"errors"
 	"github.com/Doobetter/elastic-sql-go/src/client"
 	"github.com/Doobetter/elastic-sql-go/src/conf"
 	"github.com/olivere/elastic/v7"
@@ -41,40 +42,40 @@ func NewExeElasticSQLCtx() *ExeElasticSQLCtx {
 	return ctx
 }
 
-func NewElasticSQLContextByConf(confFileName string) *ExeElasticSQLCtx {
+func NewElasticSQLContextByConf(confFileName string) (*ExeElasticSQLCtx,error) {
 	ctx := new(ExeElasticSQLCtx)
 	ctx.GCtx = context.Background()
-	ctx.Conn = GetESClientConnection(confFileName)
+	var err error
+	ctx.Conn,err = GetESClientConnection(confFileName)
+	if err!=nil{
+		return nil,err
+	}
 	if ctx.Conn != nil{
 		ctx.Conf = ctx.Conn.Conf
 	}else {
-		// todo 处理无法获取client的情况
-		return ctx
+		return ctx,errors.New("no client got")
 	}
 	ctx.ProcessUnitsMap = make(map[string]Statement)
 	ctx.Results = make(map[string]*ResultSet)
-	return ctx
+	return ctx,nil
 }
 
-func GetESClientConnection(confFileName string) *client.ESClientConnection {
+func GetESClientConnection(confFileName string) (*client.ESClientConnection,error) {
 	if conn, ok := AllESClientConns[confFileName]; ok {
-		return conn
+		return conn, nil
 	} else {
 		lock.Lock()
 		defer lock.Unlock()
 		conf, err := conf.LoadAndNewElasticSQLConfiguration(confFileName)
 		if err != nil {
-			// TODO
-			return nil
+			return nil,err
 		}
 		conn,err:= client.NewESClientConnection(conf)
 		if err!=nil{
-
+			return nil,err
 		}
 		AllESClientConns[confFileName] = conn
-		return conn
-
-
+		return conn,nil
 	}
 }
 

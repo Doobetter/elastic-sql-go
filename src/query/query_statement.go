@@ -54,7 +54,7 @@ type QueryStatement struct {
 	resultSchema   []string // 结果中需要的字段包括 meta中和script、_source中字段
 	fetchCode      int      // 初始为0，之后加上需要获取的code
 
-	searchSource  *elastic.SearchSource
+	SearchSource  *elastic.SearchSource
 	searchService *elastic.SearchService
 	scrollService *elastic.ScrollService
 }
@@ -74,16 +74,16 @@ func (s *QueryStatement) Init(ctx *basic.ExeElasticSQLCtx) error {
 		// TODO scroll
 	} else {
 		// by query
-		s.searchSource = elastic.NewSearchSource()
+		s.SearchSource = elastic.NewSearchSource()
 		// request level
-		s.searchService = elastic.NewSearchService(ctx.Conn.Client).SearchSource(s.searchSource)
+		s.searchService = elastic.NewSearchService(ctx.Conn.Client).SearchSource(s.SearchSource)
 		s.searchService.Index(s.Indexes...) //todo 对带*的index做特殊处理
 		s.searchService.AllowNoIndices(true)
 		// search source level
-		s.searchSource.TrackTotalHits(true)
+		s.SearchSource.TrackTotalHits(true)
 		s.SetFetchSourceAndSchema()
 		if s.Where != nil {
-			s.searchSource.Query(grammer.AdaptToQueryBuilder(s.Where, ctx))
+			s.SearchSource.Query(grammer.AdaptToQueryBuilder(s.Where, ctx))
 			if s.Rescore != nil {
 				// todo
 			}
@@ -93,30 +93,30 @@ func (s *QueryStatement) Init(ctx *basic.ExeElasticSQLCtx) error {
 		}
 
 		if s.MinScore > 0 {
-			s.searchSource.MinScore(s.MinScore)
+			s.SearchSource.MinScore(s.MinScore)
 		}
 
 		// 排序设置
 		for _, sortBy := range s.SortBys {
-			s.searchSource.SortBy(sortBy.ToFieldSortBuilder())
+			s.SearchSource.SortBy(sortBy.ToFieldSortBuilder())
 		}
 
 		// 获取条数设置
 		if s.From > 0 {
-			s.searchSource.From(s.From)
+			s.SearchSource.From(s.From)
 		}
 		if s.Size <= 0 {
-			s.searchSource.Size(ctx.Conf.Query.DefaultSize)
+			s.SearchSource.Size(ctx.Conf.Query.DefaultSize)
 		} else if s.Size > 0 && s.Size < 10000 {
-			s.searchSource.Size(s.Size)
+			s.SearchSource.Size(s.Size)
 		} else {
 			// 没有设置size 使用默认的配置
-			s.searchSource.Size(ctx.Conf.Query.DefaultSize)
+			s.SearchSource.Size(ctx.Conf.Query.DefaultSize)
 		}
 		if s.IsViaNON() {
 
 		} else {
-			s.searchSource.Size(ctx.Conf.Query.DefaultSize)
+			s.SearchSource.Size(ctx.Conf.Query.DefaultSize)
 		}
 
 	}
@@ -136,6 +136,7 @@ func (s *QueryStatement) Execute(ctx *basic.ExeElasticSQLCtx) error {
 		panic(err)
 		return err
 	}
+	resultSet.SearchResponse = searchResult
 	resultSet.Schemas = s.resultSchema
 	total := searchResult.TotalHits()
 	resultSet.Total = total
@@ -201,7 +202,7 @@ func (s *QueryStatement) DefaultNameSuffix() string {
 // getRealSearchResult 区分 scroll 与普通查询
 func (s *QueryStatement) getRealSearchResult(ctx context.Context) (*elastic.SearchResult, error) {
 	if s.searchService != nil {
-		log.Printf("DSL POST %s/_search %s", strings.Join(s.Indexes, ","), common.JSONPrettyStrWithErr(s.searchSource.Source()))
+		log.Printf("DSL POST %s/_search %s", strings.Join(s.Indexes, ","), common.JSONPrettyStrWithErr(s.SearchSource.Source()))
 		return s.searchService.Do(ctx)
 	} else {
 		//scroll
@@ -231,16 +232,16 @@ func (s *QueryStatement) SetFetchSourceAndSchema() {
 		}
 	}
 	if len(s.fetchSource) > 0 {
-		s.searchSource.FetchSourceIncludeExclude(s.fetchSource, nil)
+		s.SearchSource.FetchSourceIncludeExclude(s.fetchSource, nil)
 	} else if s.fetchAllSource == false {
 		// 不获取字段只获取doc的元数据
-		s.searchSource.FetchSource(false)
+		s.SearchSource.FetchSource(false)
 	}
 
 	// for 高亮
 	if s.Highlight != nil {
 		s.fetchCode |= _hilight
-		s.searchSource.Highlight(s.Highlight.ToHighlightBuilder())
+		s.SearchSource.Highlight(s.Highlight.ToHighlightBuilder())
 		s.resultSchema = append(s.resultSchema, s.Highlight.FieldSchema...)
 	}
 	// for 脚本生成字段
@@ -319,7 +320,7 @@ func (s *QueryStatement) fetch(rs *basic.ResultSet, sr *elastic.SearchResult) {
 
 func (s *QueryStatement) normalScrollFetch(ctx *basic.ExeElasticSQLCtx, resultSet *basic.ResultSet) {
 	if s.IsViaExport() {
-		fetched, err := ScrollFetchAndExport(ctx, s.Indexes, s.Export, s.searchSource, int64(s.Size))
+		fetched, err := ScrollFetchAndExport(ctx, s.Indexes, s.Export, s.SearchSource, int64(s.Size))
 		resultSet.FetchSize = fetched
 		if err != nil {
 			resultSet.ErrMsg = err.Error()
@@ -328,14 +329,14 @@ func (s *QueryStatement) normalScrollFetch(ctx *basic.ExeElasticSQLCtx, resultSe
 		resultSet.WarnMsg = "数据量超过scroll_slice_threshold直接写到文件"
 	} else if s.IsViaJOIN() {
 		// 将json格式数据放到resultSet中
-		ScrollFetch(ctx, s.fetchCode, resultSet, s.Indexes, s.searchSource, int64(s.Size))
+		ScrollFetch(ctx, s.fetchCode, resultSet, s.Indexes, s.SearchSource, int64(s.Size))
 	}
 
 }
 
 func (s *QueryStatement) sliceScrollFetch(ctx *basic.ExeElasticSQLCtx, resultSet *basic.ResultSet) {
 	if s.IsJustViaExport() {
-		fetched, err := SliceFetchAndExport(ctx, s.Indexes, s.Export, s.searchSource, s.SliceFiled, s.SliceMax, int64(s.Size))
+		fetched, err := SliceFetchAndExport(ctx, s.Indexes, s.Export, s.SearchSource, s.SliceFiled, s.SliceMax, int64(s.Size))
 		resultSet.FetchSize = fetched
 		if err != nil {
 			resultSet.ErrMsg = err.Error()
