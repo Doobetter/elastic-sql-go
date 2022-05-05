@@ -1,4 +1,4 @@
-/src/parser/ElasticSQL.g4
+#/src/parser/ElasticSQL.g4
 
 ############## Eclipse.gitignore #############
 .metadata
