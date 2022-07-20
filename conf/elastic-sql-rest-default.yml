@@ -1,6 +1,6 @@
 ################ elasticsearch client config##################
 es_client:
-  http_hosts: [http://10.23.2.21:9202,http://10.23.2.22:9202]
+  http_hosts: [http://localhost:9202,http://localhost:9202]
 
 
 # query statement config
@@ -20,4 +20,4 @@ agg:
 
 
 # position where file store
-data_dir: /Users/liucheng/Downloads
+data_dir: /Users/xxx/Downloads

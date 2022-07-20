@@ -80,7 +80,10 @@ func LoadAndNewElasticSQLConfiguration(confFileName string) (*ElasticSQLConfigur
 			// ../conf文件夹下
 			realName = "../conf/" + confFileName
 			if !PathExists(realName) {
-				return nil, errors.New("can't find conf file")
+				realName = "/data1/search/conf/"+confFileName
+				if !PathExists(realName){
+					return nil, errors.New("can't find conf file")
+				}
 			}
 		}
 	}
