@@ -139,6 +139,8 @@ func (e *TermComparableExpression) ToQueryBuilder() elastic.Query {
 
 func (e *TermComparableExpression) getRangeQueryBuilder() *elastic.RangeQuery {
 	var rangeQuery *elastic.RangeQuery
+	// es api time range 要是字符串
+	
 	if ">=" == e.Operator {
 		rangeQuery = elastic.NewRangeQuery(e.Field).Gte(e.Value)
 	} else if ">" == e.Operator {

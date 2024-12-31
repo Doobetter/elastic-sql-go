@@ -77,11 +77,12 @@ func (t *PathTree) VisitTree(tree *MultiTreeNode, boolQueryBuilder *elastic.Bool
 	}
 }
 
-//GetPathArray 工具函数 used for nested path
-//e.g. "a1.b1.c1.d1" to ["a1","a1.b1","a1.b1.c1"]
+// GetPathArray 工具函数 used for nested path
+// e.g. "a1.b1.c1.d1" to ["a1","a1.b1","a1.b1.c1"]
 // e.g "a1" 返回 空数组
-func GetPathArray(field string) []string {
+func GetPathArray(field string) ([]string, string) {
 	var arr []string
+	fch := field
 	if strings.Contains(field, PATH_SEP_STR) {
 		buf := bytes.NewBufferString("")
 		for _, c := range field {
@@ -90,11 +91,12 @@ func GetPathArray(field string) []string {
 			}
 			buf.WriteString(string(c))
 		}
+		fch = strings.ReplaceAll(fch, PATH_SEP_STR, ".")
 	}
-	return arr
+	return arr, fch
 }
 
-//MultiTreeNode 多叉树节点
+// MultiTreeNode 多叉树节点
 type MultiTreeNode struct {
 	child         map[string]*MultiTreeNode //
 	Path          string

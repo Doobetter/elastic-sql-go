@@ -84,7 +84,7 @@ func (e *ExpressionBase) CloneNew(dst interface{}) error {
 	return gob.NewDecoder(bytes.NewReader(buf.Bytes())).Decode(dst)
 }
 
-//AllExpression match_all
+// AllExpression match_all
 type AllExpression struct {
 	ExpressionBase
 }
@@ -114,8 +114,8 @@ type LogicExpression struct {
 
 	Nested        bool   // 是否有nested类型字段条件
 	UniParentPath string // 子表达式的统一parentPath
-
-	Logic string // 默认无LOGIC
+	Not           bool   // 是否有 not(xxx)  专门用于 nested not
+	Logic         string // 默认无LOGIC
 
 	HasSub bool // 是否是含有子表达式 初始化后是空的为false AddSubExpr 之后就不为空 为true
 }
@@ -132,6 +132,7 @@ func (e *LogicExpression) copy(one *LogicExpression) {
 	e.SubExpr = one.SubExpr
 	e.HasSub = one.HasSub
 	e.PathExpr = one.PathExpr
+	e.Not = one.Not
 	e.Logic = one.Logic
 }
 
@@ -153,7 +154,7 @@ func (e *LogicExpression) ToQueryBuilder() elastic.Query {
 	return boolQuery
 }
 
-//AddSubComparableExpr 将子条件类型为IComparableExpression的加入进来
+// AddSubComparableExpr 将子条件类型为IComparableExpression的加入进来
 func (e *LogicExpression) addSubComparableExpr(cmpExpr IComparableExpression) {
 
 	if len(cmpExpr.GetPaths()) > 0 {
@@ -381,7 +382,7 @@ func (e *LogicExpression) simpleRangeInAndLogic(boolQuery *elastic.BoolQuery, co
 	}
 }
 
-//1是<或者<= ，2是>或者>=
+// 1是<或者<= ，2是>或者>=
 func codeForOp(op string) int {
 	if strings.HasPrefix(op, "<") {
 		return 1

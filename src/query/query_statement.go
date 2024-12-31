@@ -133,7 +133,6 @@ func (s *QueryStatement) Execute(ctx *basic.ExeElasticSQLCtx) error {
 	searchResult, err := s.getRealSearchResult(ctx.GCtx)
 	if err != nil {
 		resultSet.ErrMsg = err.Error()
-		panic(err)
 		return err
 	}
 	resultSet.SearchResponse = searchResult

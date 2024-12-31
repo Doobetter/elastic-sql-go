@@ -73,12 +73,12 @@ func (p *MyElasticVisitor) VisitQueryStatement(ctx *parser.QueryStatementContext
 		stat.MinScore, _ = strconv.ParseFloat(ctx.GetMinScore().GetText(), 64)
 	}
 	for _, itemI := range ctx.GetSelectItems() {
-		item:= itemI.(*parser.SelectItemContext)
-		if item.FieldIdentifier() != nil{
-			f:=item.GetText()
+		item := itemI.(*parser.SelectItemContext)
+		if item.FieldIdentifier() != nil {
+			f := item.GetText()
 			stat.Fields = append(stat.Fields, f)
-		}else if item.Highlight() != nil{
-			if stat.Highlight == nil{
+		} else if item.Highlight() != nil {
+			if stat.Highlight == nil {
 				stat.Highlight = grammer.NewHighlightAdapter()
 			}
 			hgCtx := item.Highlight().(*parser.HighlightContext)
@@ -93,7 +93,7 @@ func (p *MyElasticVisitor) VisitQueryStatement(ctx *parser.QueryStatementContext
 				fieldSchema = append(fieldSchema, as)
 
 			}
-		}else if item.ScriptField() != nil {
+		} else if item.ScriptField() != nil {
 			if stat.ExprFields == nil {
 				stat.ExprFields = make(map[string]*grammer.ScriptAdapter)
 			}
@@ -153,7 +153,7 @@ func (p *MyElasticVisitor) VisitQueryStatement(ctx *parser.QueryStatementContext
 			}
 
 		}
-		if n:=ctx.ExportStatement();n != nil {
+		if n := ctx.ExportStatement(); n != nil {
 			stat.Export = p.VisitExportStatement(n.(*parser.ExportStatementContext)).(*grammer.ExportClause)
 			stat.Add(basic.PostProcessEnumVIAEXPORT)
 		}
@@ -190,7 +190,7 @@ func (p *MyElasticVisitor) VisitIndexName(ctx *parser.IndexNameContext) interfac
 
 func (v *MyElasticVisitor) VisitWhereExpression(ctx *parser.WhereExpressionContext) interface{} {
 	var where grammer.Expression
-	if n:=ctx.LogicalExpr();n != nil {
+	if n := ctx.LogicalExpr(); n != nil {
 		where = v.VisitLogicalExpr(n.(*parser.LogicalExprContext)).(grammer.Expression)
 		if ctx.SCORE() != nil {
 			needScore, _ := strconv.ParseBool(ctx.GetScore().GetText())
@@ -203,7 +203,7 @@ func (v *MyElasticVisitor) VisitWhereExpression(ctx *parser.WhereExpressionConte
 }
 
 func (v *MyElasticVisitor) VisitLogicalExpr(ctx *parser.LogicalExprContext) interface{} {
-	if cmp:=ctx.ComparableExpression();cmp != nil {
+	if cmp := ctx.ComparableExpression(); cmp != nil {
 		return v.VisitComparableExpression(cmp.(*parser.ComparableExpressionContext))
 	} else if ctx.GetInner() != nil {
 		// 有括号
@@ -260,11 +260,9 @@ func (v *MyElasticVisitor) VisitComparableExpression(ctx *parser.ComparableExpre
 func (v *MyElasticVisitor) VisitTermCompare(ctx *parser.TermCompareContext) interface{} {
 	expr := grammer.NewTermComparableExpression()
 	field := ctx.GetField().GetText()
-	expr.Paths = grammer.GetPathArray(field)
-	// 对于对象类型处理
-	// expr.Field = strings.ReplaceAll(field, "$", ".")
-	expr.Field = field
-		operator := ctx.GetOperator().GetText()
+	expr.Paths, expr.Field = grammer.GetPathArray(field)
+
+	operator := ctx.GetOperator().GetText()
 	if "!=" == operator || "<>" == operator {
 		expr.Not = true
 	}
@@ -277,10 +275,8 @@ func (v *MyElasticVisitor) VisitTermCompare(ctx *parser.TermCompareContext) inte
 func (v *MyElasticVisitor) VisitBtwCompare(ctx *parser.BtwCompareContext) interface{} {
 	expr := grammer.NewBtwComparableExpression()
 	field := ctx.GetField().GetText()
-	expr.Paths = grammer.GetPathArray(field)
-	// 对于对象类型处理
-	// expr.Field = strings.ReplaceAll(field, "$", ".")
-	expr.Field = field
+	expr.Paths, expr.Field = grammer.GetPathArray(field)
+
 	if ctx.GetGte() != nil {
 		expr.Gte = true
 	}
@@ -300,27 +296,24 @@ func (v *MyElasticVisitor) VisitFunctionalCompare(ctx *parser.FunctionalCompareC
 		expr.Func = strings.ToUpper(funcCtx.GetFuncName().GetText())
 		if f := funcCtx.GetField(); f != nil {
 			field := f.GetText()
-			expr.Paths = grammer.GetPathArray(field)
-			// 对于对象类型处理
-			// expr.Field = strings.ReplaceAll(field, "$", ".")
-			expr.Field = field
+			expr.Paths, expr.Field = grammer.GetPathArray(field)
 		}
 		if b := funcCtx.GetBoost(); b != nil {
 			expr.Boost, _ = strconv.ParseFloat(b.GetText(), 64)
 		}
-		if params:=funcCtx.GetParams();len(params)>0{
+		if params := funcCtx.GetParams(); len(params) > 0 {
 
 			for _, p := range params {
-				expr.Params = append(expr.Params,v.VisitParam2(p.(*parser.Param2Context)))
+				expr.Params = append(expr.Params, v.VisitParam2(p.(*parser.Param2Context)))
 			}
 		}
-		if n:=funcCtx.GetUseField();n!=nil{
+		if n := funcCtx.GetUseField(); n != nil {
 			// todo
 		}
 
 		return expr
 	} else if ctx.FullLevelFunction() != nil {
-		expr:= grammer.NewFullLevelFunctionalComparableExpression()
+		expr := grammer.NewFullLevelFunctionalComparableExpression()
 		funcCtx := ctx.FullLevelFunction()
 		expr.Func = strings.ToUpper(funcCtx.GetFuncName().GetText())
 		expr.Props = make(map[string]interface{})
@@ -399,7 +392,6 @@ func (v *MyElasticVisitor) VisitArrayValue(ctx *parser.ArrayValueContext) interf
 	return v.VisitParamValues(ctx.ParamValues().(*parser.ParamValuesContext))
 }
 
-
 func (v *MyElasticVisitor) VisitParam(ctx *parser.ParamContext) interface{} {
 	txt := ctx.GetText()
 	var value interface{}
@@ -446,14 +438,13 @@ func (v *MyElasticVisitor) VisitParamValues(ctx *parser.ParamValuesContext) inte
 	return values
 }
 
-func (v *MyElasticVisitor)VisitAnalysisStatement( ctx *parser.AnalysisStatementContext) interface{}  {
+func (v *MyElasticVisitor) VisitAnalysisStatement(ctx *parser.AnalysisStatementContext) interface{} {
 
 	return nil
 }
 
 // VisitAggStatement group by 部分解析
 func (v *MyElasticVisitor) VisitAggStatement(ctx *parser.AggStatementContext) interface{} {
-
 
 	return v.VisitChildren(ctx)
 }

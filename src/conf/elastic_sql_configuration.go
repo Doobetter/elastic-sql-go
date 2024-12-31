@@ -3,7 +3,7 @@ package conf
 import (
 	"errors"
 	"fmt"
-	"gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v3"
 	"io/ioutil"
 	"os"
 )
@@ -80,8 +80,8 @@ func LoadAndNewElasticSQLConfiguration(confFileName string) (*ElasticSQLConfigur
 			// ../conf文件夹下
 			realName = "../conf/" + confFileName
 			if !PathExists(realName) {
-				realName = "/data1/search/conf/"+confFileName
-				if !PathExists(realName){
+				realName = "/data1/search/conf/" + confFileName
+				if !PathExists(realName) {
 					return nil, errors.New("can't find conf file")
 				}
 			}

@@ -7,5 +7,5 @@ require (
 	github.com/olivere/elastic/v7 v7.0.28
 	github.com/pkg/errors v0.9.1
 	golang.org/x/sync v0.0.0-20190423024810-112230192c58
-	gopkg.in/yaml.v2 v2.2.8
+	gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c
 )

@@ -113,7 +113,7 @@ whereExpression:
 
 logicalExpr: // 逻辑表达式
    comparableExpression
-   | '(' inner = logicalExpr ')'
+   | (not=NOT)? '(' inner = logicalExpr ')'
    | left = logicalExpr operator = AND  right = logicalExpr 
    | left = logicalExpr operator = OR  right = logicalExpr
 ;
