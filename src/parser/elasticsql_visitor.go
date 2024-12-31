@@ -1,8 +1,7 @@
-// Code generated from /Users/liucheng/workspace_go/elastic-sql-go/src/parser/ElasticSQL.g4 by ANTLR 4.9.2. DO NOT EDIT.
+// Code generated from ./src/parser/ElasticSQL.g4 by ANTLR 4.13.2. DO NOT EDIT.
 
 package parser // ElasticSQL
-
-import "github.com/antlr/antlr4/runtime/Go/antlr"
+import "github.com/antlr4-go/antlr/v4"
 
 // A complete Visitor for a parse tree produced by ElasticSQLParser.
 type ElasticSQLVisitor interface {

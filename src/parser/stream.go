@@ -1,8 +1,8 @@
 package parser
 
-import "github.com/antlr/antlr4/runtime/Go/antlr"
+import "github.com/antlr4-go/antlr/v4"
 
-//对token大小写不敏感
+// 对token大小写不敏感
 type CaseInsensitiveStream struct {
 	stream antlr.CharStream
 }
@@ -58,6 +58,6 @@ func (c *CaseInsensitiveStream) GetTextFromTokens(start, end antlr.Token) string
 	return c.stream.GetTextFromTokens(start, end)
 }
 
-func (c *CaseInsensitiveStream) GetTextFromInterval(interval *antlr.Interval) string {
+func (c *CaseInsensitiveStream) GetTextFromInterval(interval antlr.Interval) string {
 	return c.stream.GetTextFromInterval(interval)
 }

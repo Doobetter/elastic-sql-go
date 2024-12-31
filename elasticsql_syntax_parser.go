@@ -5,7 +5,7 @@ import (
 	"github.com/Doobetter/elastic-sql-go/src/grammer"
 	"github.com/Doobetter/elastic-sql-go/src/parser"
 	"github.com/Doobetter/elastic-sql-go/src/query"
-	"github.com/antlr/antlr4/runtime/Go/antlr"
+	"github.com/antlr4-go/antlr/v4"
 	"strconv"
 	"strings"
 )
