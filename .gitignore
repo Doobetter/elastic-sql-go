@@ -51,11 +51,5 @@ sync_circle
 
 ##### private
 /log/
-/conf
-/conf/elastic-sql-rest-knn.yml
-/conf/elastic-sql-rest-cms.yml
-/doc/antlr4_gen_code.md
-/src/parser/note.txt
-elastic_sql_query_test.go
-elastic_sql_client_test.go
-/elastic_sql_test.go
+/conf/elastic-sql-rest-g1.yml
+/conf/elastic-sql-rest-g2.yml

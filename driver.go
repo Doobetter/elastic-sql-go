@@ -5,17 +5,17 @@ import (
 	"fmt"
 	"github.com/Doobetter/elastic-sql-go/src/basic"
 	"github.com/Doobetter/elastic-sql-go/src/parser"
-	"github.com/antlr/antlr4/runtime/Go/antlr"
+	"github.com/antlr4-go/antlr/v4"
 )
 
-func ElasticSQL(mySQL, confFileName string ) (*basic.ExeElasticSQLCtx,error) {
+func ElasticSQL(mySQL, confFileName string) (*basic.ExeElasticSQLCtx, error) {
 
-	input:=parser.NewCaseInsensitiveStream(antlr.NewInputStream(mySQL))
-	lexer:=parser.NewElasticSQLLexer(input)
-	stream:=antlr.NewCommonTokenStream(lexer,antlr.TokenDefaultChannel)
-	elasticSQLParser:=parser.NewElasticSQLParser(stream)
+	input := parser.NewCaseInsensitiveStream(antlr.NewInputStream(mySQL))
+	lexer := parser.NewElasticSQLLexer(input)
+	stream := antlr.NewCommonTokenStream(lexer, antlr.TokenDefaultChannel)
+	elasticSQLParser := parser.NewElasticSQLParser(stream)
 	elasticSQLParser.AddParseListener(new(parser.ElasticSQLReactListener))
-	tree:=elasticSQLParser.ElasticSQL()
+	tree := elasticSQLParser.ElasticSQL()
 	//tree,err:= toTreeBySSL(elasticSQLParser)
 	//if err != nil{
 	//	//
@@ -27,24 +27,24 @@ func ElasticSQL(mySQL, confFileName string ) (*basic.ExeElasticSQLCtx,error) {
 
 	var elasticSQL *basic.ExeElasticSQLCtx
 	var err error
-	if confFileName!=""{
-		elasticSQL,err = basic.NewElasticSQLContextByConf(confFileName)
-	}else {
+	if confFileName != "" {
+		elasticSQL, err = basic.NewElasticSQLContextByConf(confFileName)
+	} else {
 		elasticSQL = basic.NewExeElasticSQLCtx()
 	}
-	if err != nil{
-		return nil,err
+	if err != nil {
+		return nil, err
 	}
 	elasticSQL.SQL = mySQL
-	visitor := NewMyElasticVisitor(mySQL,elasticSQL)
+	visitor := NewMyElasticVisitor(mySQL, elasticSQL)
 	a := visitor.VisitElasticSQL(tree.(*parser.ElasticSQLContext))
 	//a:=tree.Accept(visitor)
-	if a !=nil{
-		return a.(*basic.ExeElasticSQLCtx),nil
+	if a != nil {
+		return a.(*basic.ExeElasticSQLCtx), nil
 	}
-	return nil,errors.New("parse error no ElasticSQLContent return")
+	return nil, errors.New("parse error no ElasticSQLContent return")
 }
-func toTreeBySSL(elasticSQLParser * parser.ElasticSQLParser) (antlr.ParserRuleContext,error){
+func toTreeBySSL(elasticSQLParser *parser.ElasticSQLParser) (antlr.ParserRuleContext, error) {
 	var tree antlr.ParserRuleContext
 	var err error
 	defer func() {
@@ -58,7 +58,5 @@ func toTreeBySSL(elasticSQLParser * parser.ElasticSQLParser) (antlr.ParserRuleCo
 
 	elasticSQLParser.GetInterpreter().SetPredictionMode(antlr.PredictionModeSLL)
 	tree = elasticSQLParser.ElasticSQL()
-	return tree,err
+	return tree, err
 }
-
-
