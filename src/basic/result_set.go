@@ -1,3 +1,9 @@
+/*
+ *  Copyright 2020-present Doobetter. All rights reserved.
+ *  Use of this source code is governed by a MIT-license.
+ *
+ */
+
 package basic
 
 import "github.com/olivere/elastic/v7"
@@ -14,7 +20,7 @@ type ResultSet struct {
 	Schemas        []string                 `json:"schemas,omitempty"`
 	Data           []map[string]interface{} `json:"data,omitempty"` // 存储数据
 	Headers        []string                 `json:"headers,omitempty"`
-	SearchResponse *elastic.SearchResult     `json:"-"`
+	SearchResponse *elastic.SearchResult    `json:"-"`
 }
 
 func NewResultSet(name string) *ResultSet {

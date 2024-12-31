@@ -1,3 +1,9 @@
+/*
+ *  Copyright 2020-present Doobetter. All rights reserved.
+ *  Use of this source code is governed by a MIT-license.
+ *
+ */
+
 package common
 
 import (
@@ -19,13 +25,13 @@ type SS1 struct {
 
 func TestIsTypeOf(t *testing.T) {
 	//fmt.Println()
-	ss1:=SS1{
-		S1:     S1{
-			A1:  A1{Name:"aaa"},
+	ss1 := SS1{
+		S1: S1{
+			A1:  A1{Name: "aaa"},
 			Age: 2,
 		},
 		Gender: 3,
 	}
-	un:= interface{}(ss1)
-	fmt.Println(IsTypeOf(un,"S1"))
+	un := interface{}(ss1)
+	fmt.Println(IsTypeOf(un, "S1"))
 }

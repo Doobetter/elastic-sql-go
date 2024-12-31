@@ -1,3 +1,9 @@
+/*
+ *  Copyright 2020-present Doobetter. All rights reserved.
+ *  Use of this source code is governed by a MIT-license.
+ *
+ */
+
 package grammer
 
 import (
@@ -138,7 +144,7 @@ func (e *FullLevelFunctionalComparableExpression) buildQueryStringQueryBuilder()
 }
 
 // buildMultiMatchQueryBuilder
-//https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-multi-match-query.html
+// https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-multi-match-query.html
 func (e *FullLevelFunctionalComparableExpression) buildMultiMatchQueryBuilder() elastic.Query {
 	query := elastic.NewMultiMatchQuery(e.Props["query"].(string))
 
@@ -183,7 +189,7 @@ func (e *FullLevelFunctionalComparableExpression) buildMultiMatchQueryBuilder() 
 	return query
 }
 
-//buildKnnQueryBuilder  OpenSearch KnnQuery
+// buildKnnQueryBuilder  OpenSearch KnnQuery
 func (e *FullLevelFunctionalComparableExpression) buildKnnQueryBuilder() elastic.Query {
 	f := e.Props["field"].(string)
 	qs := map[string]interface{}{

@@ -1,3 +1,9 @@
+/*
+ *  Copyright 2020-present Doobetter. All rights reserved.
+ *  Use of this source code is governed by a MIT-license.
+ *
+ */
+
 package grammer
 
 import (
@@ -20,7 +26,6 @@ type IComparableExpression interface {
 	NestedSingleCondition(query elastic.Query) elastic.Query
 }
 
-
 type ComparableExpression struct {
 	ExpressionBase
 	Field string
@@ -38,11 +43,14 @@ type ComparableExpression struct {
 //	return compareExpr.NestedSingleCondition(builder)
 //}
 
-//XorTrue e.Not^true
-func (e ComparableExpression) XorTrue(){
-	if e.Not == true {e.Not = false}else {e.Not = true}
+// XorTrue e.Not^true
+func (e ComparableExpression) XorTrue() {
+	if e.Not == true {
+		e.Not = false
+	} else {
+		e.Not = true
+	}
 }
-
 
 func (e ComparableExpression) GetField() string {
 	return e.Field
@@ -83,9 +91,10 @@ func NestedSingleCondition(e *ComparableExpression, query elastic.Query) elastic
 	}
 	return query
 }
+
 // NestedSingleCondition 单个条件时对嵌套的判断
 func (e *ComparableExpression) NestedSingleCondition(query elastic.Query) elastic.Query {
-	return NestedSingleCondition(e,query)
+	return NestedSingleCondition(e, query)
 }
 
 // EnrichQueryBuilder ComparableExpression类查询通用的对not做处理
@@ -140,7 +149,7 @@ func (e *TermComparableExpression) ToQueryBuilder() elastic.Query {
 func (e *TermComparableExpression) getRangeQueryBuilder() *elastic.RangeQuery {
 	var rangeQuery *elastic.RangeQuery
 	// es api time range 要是字符串
-	
+
 	if ">=" == e.Operator {
 		rangeQuery = elastic.NewRangeQuery(e.Field).Gte(e.Value)
 	} else if ">" == e.Operator {
@@ -168,7 +177,7 @@ func (g TermGroup) Len() int {
 	return len(g)
 }
 
-//Less 有小到大排序
+// Less 有小到大排序
 // 本体系中只有int64 float64两种类型
 func (g TermGroup) Less(i, j int) bool {
 	one := g[i]
@@ -204,4 +213,3 @@ func (g TermGroup) Less(i, j int) bool {
 func (g TermGroup) Swap(i, j int) {
 	g[i], g[j] = g[j], g[i]
 }
-

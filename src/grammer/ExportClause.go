@@ -1,8 +1,14 @@
+/*
+ *  Copyright 2020-present Doobetter. All rights reserved.
+ *  Use of this source code is governed by a MIT-license.
+ *
+ */
+
 package grammer
 
 import (
-	"github.com/Doobetter/elastic-sql-go/src/conf"
 	"fmt"
+	"github.com/Doobetter/elastic-sql-go/src/conf"
 	"os"
 )
 
@@ -11,7 +17,7 @@ const (
 	EXPORT_CSV  = "CSV"
 )
 
-//ExportClause 导出文件
+// ExportClause 导出文件
 type ExportClause struct {
 	Fields     []string
 	FileName   string
@@ -32,12 +38,14 @@ func NewExportClause() *ExportClause {
 		Headers:    nil,
 	}
 }
-//ResetFields 如果Fields没有设置 就重置
-func (c* ExportClause) ResetFields(schema []string)  {
-	if len(c.Fields) <=0{
+
+// ResetFields 如果Fields没有设置 就重置
+func (c *ExportClause) ResetFields(schema []string) {
+	if len(c.Fields) <= 0 {
 		c.Fields = schema
 	}
 }
+
 // 判断所给路径文件/文件夹是否存在
 func Exists(path string) bool {
 	_, err := os.Stat(path) //os.Stat获取文件信息

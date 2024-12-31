@@ -1,3 +1,8 @@
+/*
+ *  Copyright 2020-present Doobetter. All rights reserved.
+ *  Use of this source code is governed by a MIT-license.
+ *
+ */
 package basic
 
 import (
@@ -15,7 +20,7 @@ var AllESClientConns = make(map[string]*client.ESClientConnection)
 
 var lock sync.Mutex
 
-//ExeElasticSQLCtx 合并ElaticSQL和Context
+// ExeElasticSQLCtx 合并ElaticSQL和Context
 type ExeElasticSQLCtx struct {
 	GCtx        context.Context
 	Conf        *conf.ElasticSQLConfiguration
@@ -42,25 +47,25 @@ func NewExeElasticSQLCtx() *ExeElasticSQLCtx {
 	return ctx
 }
 
-func NewElasticSQLContextByConf(confFileName string) (*ExeElasticSQLCtx,error) {
+func NewElasticSQLContextByConf(confFileName string) (*ExeElasticSQLCtx, error) {
 	ctx := new(ExeElasticSQLCtx)
 	ctx.GCtx = context.Background()
 	var err error
-	ctx.Conn,err = GetESClientConnection(confFileName)
-	if err!=nil{
-		return nil,err
+	ctx.Conn, err = GetESClientConnection(confFileName)
+	if err != nil {
+		return nil, err
 	}
-	if ctx.Conn != nil{
+	if ctx.Conn != nil {
 		ctx.Conf = ctx.Conn.Conf
-	}else {
-		return ctx,errors.New("no client got")
+	} else {
+		return ctx, errors.New("no client got")
 	}
 	ctx.ProcessUnitsMap = make(map[string]Statement)
 	ctx.Results = make(map[string]*ResultSet)
-	return ctx,nil
+	return ctx, nil
 }
 
-func GetESClientConnection(confFileName string) (*client.ESClientConnection,error) {
+func GetESClientConnection(confFileName string) (*client.ESClientConnection, error) {
 	if conn, ok := AllESClientConns[confFileName]; ok {
 		return conn, nil
 	} else {
@@ -68,14 +73,14 @@ func GetESClientConnection(confFileName string) (*client.ESClientConnection,erro
 		defer lock.Unlock()
 		conf, err := conf.LoadAndNewElasticSQLConfiguration(confFileName)
 		if err != nil {
-			return nil,err
+			return nil, err
 		}
-		conn,err:= client.NewESClientConnection(conf)
-		if err!=nil{
-			return nil,err
+		conn, err := client.NewESClientConnection(conf)
+		if err != nil {
+			return nil, err
 		}
 		AllESClientConns[confFileName] = conn
-		return conn,nil
+		return conn, nil
 	}
 }
 
@@ -122,7 +127,7 @@ func (c *ExeElasticSQLCtx) GetResultSet(name string) *ResultSet {
 	}
 }
 
-//GetTheResultSet 获取唯一的result
+// GetTheResultSet 获取唯一的result
 func (c *ExeElasticSQLCtx) GetTheResultSet() *ResultSet {
 	for _, v := range c.Results {
 		return v

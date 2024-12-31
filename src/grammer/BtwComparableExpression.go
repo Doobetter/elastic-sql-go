@@ -1,3 +1,9 @@
+/*
+ *  Copyright 2020-present Doobetter. All rights reserved.
+ *  Use of this source code is governed by a MIT-license.
+ *
+ */
+
 package grammer
 
 import "github.com/olivere/elastic/v7"
@@ -19,18 +25,18 @@ func NewBtwComparableExpression() *BtwComparableExpression {
 }
 
 func (e *BtwComparableExpression) ToQueryBuilder() elastic.Query {
-	queryBuilder :=elastic.NewRangeQuery(e.Field)
-	if e.A!=nil{
-		if e.Gte{
+	queryBuilder := elastic.NewRangeQuery(e.Field)
+	if e.A != nil {
+		if e.Gte {
 			queryBuilder.Gte(e.A)
-		}else{
+		} else {
 			queryBuilder.Gt(e.A)
 		}
 	}
-	if e.B!=nil{
-		if e.Lte{
+	if e.B != nil {
+		if e.Lte {
 			queryBuilder.Lte(e.B)
-		}else{
+		} else {
 			queryBuilder.Lt(e.B)
 		}
 	}

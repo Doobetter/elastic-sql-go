@@ -1,3 +1,9 @@
+/*
+ *  Copyright 2020-present Doobetter. All rights reserved.
+ *  Use of this source code is governed by a MIT-license.
+ *
+ */
+
 package query
 
 import (
@@ -77,13 +83,13 @@ func GetCsvMapper(fetchCode int, fields []string) func(hit *elastic.SearchHit) [
 			json.Unmarshal(hit.Source, &row)
 			bs := bytes.Buffer{}
 			for _, field := range fields {
-				if field == "_index"{
+				if field == "_index" {
 					bs.WriteString(hit.Index)
-				}else if field == "_id"{
+				} else if field == "_id" {
 					bs.WriteString(hit.Id)
-				}else if field == "_score"{
-					bs.WriteString(strconv.FormatFloat(*hit.Score,'f', 32,64))
-				}else if v, ok := row[field]; ok {
+				} else if field == "_score" {
+					bs.WriteString(strconv.FormatFloat(*hit.Score, 'f', 32, 64))
+				} else if v, ok := row[field]; ok {
 					bs.WriteString(parseSourceValueToString(v))
 				} else {
 					bs.WriteString("")
@@ -125,7 +131,7 @@ func GetJSONMapper(fetchCode int) func(hit *elastic.SearchHit) []byte {
 		jsonMapper = func(hit *elastic.SearchHit) []byte {
 			return hit.Source
 		}
-	}else if fetchCode == _id {
+	} else if fetchCode == _id {
 		// just _id
 		jsonMapper = func(hit *elastic.SearchHit) []byte {
 			bs := bytes.Buffer{}
@@ -134,7 +140,7 @@ func GetJSONMapper(fetchCode int) func(hit *elastic.SearchHit) []byte {
 			bs.WriteString("\"}")
 			return bs.Bytes()
 		}
-	}else {
+	} else {
 		// others
 		jsonMapper = func(hit *elastic.SearchHit) []byte {
 			row := GetSourceAndHighlight(hit)
@@ -164,16 +170,16 @@ func GetMapMapper(fetchCode int) func(hit *elastic.SearchHit) map[string]interfa
 			}
 			return row
 		}
-	}else if fetchCode == _id {
+	} else if fetchCode == _id {
 		// just _id
 		jsonMapper = func(hit *elastic.SearchHit) map[string]interface{} {
 			return map[string]interface{}{
 				"_id": hit.Id,
 			}
 		}
-	}else {
+	} else {
 		// others
-		jsonMapper = func(hit *elastic.SearchHit) map[string]interface{}{
+		jsonMapper = func(hit *elastic.SearchHit) map[string]interface{} {
 			row := GetSourceAndHighlight(hit)
 			if Has(fetchCode, _index) {
 				row["_index"] = hit.Index

@@ -1,3 +1,9 @@
+/*
+ *  Copyright 2020-present Doobetter. All rights reserved.
+ *  Use of this source code is governed by a MIT-license.
+ *
+ */
+
 package agg
 
 import (
@@ -5,28 +11,29 @@ import (
 	"github.com/Doobetter/elastic-sql-go/src/basic"
 	"github.com/Doobetter/elastic-sql-go/src/query"
 )
-//AnalysisStatement 包含多个 AggregationStatement
+
+// AnalysisStatement 包含多个 AggregationStatement
 type AnalysisStatement struct {
-	frontStat *query.QueryStatement
-	front string // frontStat的名字
+	frontStat     *query.QueryStatement
+	front         string // frontStat的名字
 	aggStatements []*AggregationStatement
 }
 
 func (a *AnalysisStatement) Init(ctx *basic.ExeElasticSQLCtx) error {
-	if a.frontStat == nil{
+	if a.frontStat == nil {
 		return errors.New("front statement is not set in analysis statement")
 	}
 	for _, stat := range a.aggStatements {
 		stat.GenPostProcessCode()
 		stat.AddAggregationBuilder(a.frontStat.SearchSource)
 	}
-	return  nil
+	return nil
 }
 
 func (a *AnalysisStatement) Execute(ctx *basic.ExeElasticSQLCtx) error {
 	// 获取结果，查询统计已经在QueryStatement的执行中实现
 	fronResult := ctx.GetResultSet(a.front)
-	sr:=fronResult.SearchResponse
+	sr := fronResult.SearchResponse
 	for _, agg := range a.aggStatements {
 		ctx.AddResultSet(agg.Name, agg.ParseResult(sr))
 	}
@@ -59,4 +66,3 @@ func (a AnalysisStatement) GenPostProcessCode() int {
 	// do nothing
 	return -1
 }
-

@@ -1,3 +1,9 @@
+/*
+ *  Copyright 2020-present Doobetter. All rights reserved.
+ *  Use of this source code is governed by a MIT-license.
+ *
+ */
+
 package query
 
 import (
@@ -13,7 +19,7 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
-//ScrollFetchAndExport one-goroutine 写入缓冲channel 一个消费者消费并写文件
+// ScrollFetchAndExport one-goroutine 写入缓冲channel 一个消费者消费并写文件
 func ScrollFetchAndExport(ctx *basic.ExeElasticSQLCtx, indices []string, export *grammer.ExportClause, searchSource *elastic.SearchSource, limit int64) (int64, error) {
 
 	client := ctx.Conn.Client
@@ -128,7 +134,7 @@ func ScrollFetch(ctx *basic.ExeElasticSQLCtx, fetchCode int, resultSet *basic.Re
 			case <-ctx.GCtx.Done():
 				return ctx.GCtx.Err()
 			default:
-				resultSet.Data = append(resultSet.Data , mapper(hit))
+				resultSet.Data = append(resultSet.Data, mapper(hit))
 			}
 		}
 		if count >= limit {

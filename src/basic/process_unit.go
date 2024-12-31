@@ -1,3 +1,9 @@
+/*
+ *  Copyright 2020-present Doobetter. All rights reserved.
+ *  Use of this source code is governed by a MIT-license.
+ *
+ */
+
 package basic
 
 import "strconv"
@@ -10,25 +16,26 @@ type ProcessUnit struct {
 	Processes map[int]Void // 该处理单元的所有后续处理过程
 }
 
-func NewProcessUnit()*ProcessUnit{
-	p:= new(ProcessUnit)
+func NewProcessUnit() *ProcessUnit {
+	p := new(ProcessUnit)
 	p.Processes = make(map[int]Void)
 	return p
 }
 
-func  (p *ProcessUnit) GetName() string {
+func (p *ProcessUnit) GetName() string {
 	return p.Name
 }
-func  (p *ProcessUnit) SetName(name string){
-	p.Name  = name
+func (p *ProcessUnit) SetName(name string) {
+	p.Name = name
 }
+
 // DefaultNameSuffix 默认名的缀
 func (p *ProcessUnit) DefaultNameSuffix() string {
 	return ""
 }
 
 // GenUniqName 生成处理单元的名字
-//如果没有指定名字，系统生成唯一的名字
+// 如果没有指定名字，系统生成唯一的名字
 func (p *ProcessUnit) GenUniqName(mapName string, seq int) string {
 	if mapName == "" {
 		p.Name = strconv.Itoa(seq) + p.DefaultNameSuffix()
@@ -61,31 +68,32 @@ func (p *ProcessUnit) IsViaNON() bool {
 	return p.postProcessesCode == PostProcessEnumVIANON
 }
 
-//IsViaExport 该过程的结果是否要用于 export 输出结果
+// IsViaExport 该过程的结果是否要用于 export 输出结果
 func (p *ProcessUnit) IsViaExport() bool {
 	return (PostProcessEnumVIAEXPORT & p.postProcessesCode) == PostProcessEnumVIAEXPORT
 }
+
 // IsJustViaExport 是否只需要export
-func  (p *ProcessUnit) IsJustViaExport() bool {
+func (p *ProcessUnit) IsJustViaExport() bool {
 	return p.postProcessesCode == PostProcessEnumVIAEXPORT
 }
 
-//IsViaJOIN 该过程的结果是否要用于 join statement
+// IsViaJOIN 该过程的结果是否要用于 join statement
 func (p *ProcessUnit) IsViaJOIN() bool {
 	return (PostProcessEnumVIAJOIN & p.postProcessesCode) == PostProcessEnumVIAJOIN
 }
 
-//IsViaSpark 该过程的结果是否要用于 spark statement
+// IsViaSpark 该过程的结果是否要用于 spark statement
 func (p *ProcessUnit) IsViaSpark() bool {
 	return (PostProcessEnumVIASPARK & p.postProcessesCode) == PostProcessEnumVIASPARK
 }
 
-//IsViaHive 该过程的结果是否要用于 hive sql
+// IsViaHive 该过程的结果是否要用于 hive sql
 func (p *ProcessUnit) IsViaHive() bool {
 	return (PostProcessEnumVIAHIVE & p.postProcessesCode) == PostProcessEnumVIAHIVE
 }
 
-//IsViaByAnd 是否都要经过vias后续处理
+// IsViaByAnd 是否都要经过vias后续处理
 func (p *ProcessUnit) IsViaByAnd(vias ...int) bool {
 	code := 0
 	for _, via := range vias {
@@ -94,7 +102,7 @@ func (p *ProcessUnit) IsViaByAnd(vias ...int) bool {
 	return code == p.postProcessesCode
 }
 
-//IsViaByOr 只要经过vias中的一个就返回true
+// IsViaByOr 只要经过vias中的一个就返回true
 func (p *ProcessUnit) IsViaByOr(vias ...int) bool {
 	code := 0
 	for _, via := range vias {

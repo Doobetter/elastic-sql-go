@@ -1,3 +1,9 @@
+/*
+ *  Copyright 2020-present Doobetter. All rights reserved.
+ *  Use of this source code is governed by a MIT-license.
+ *
+ */
+
 package basic
 
 type Statement interface {
@@ -13,6 +19,7 @@ type Statement interface {
 	SetName(name string)
 	GenPostProcessCode() int
 }
+
 //
 //func (s *Statement) init(ctx *ExeElasticSQLCtx) error { return nil }
 //

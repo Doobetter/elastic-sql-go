@@ -1,3 +1,9 @@
+/*
+ *  Copyright 2020-present Doobetter. All rights reserved.
+ *  Use of this source code is governed by a MIT-license.
+ *
+ */
+
 package grammer
 
 import (
@@ -7,7 +13,7 @@ import (
 
 // AdaptToQueryBuilder where to Query
 // 条件转化总入口
-func  AdaptToQueryBuilder(e Expression,ctx *basic.ExeElasticSQLCtx) elastic.Query {
+func AdaptToQueryBuilder(e Expression, ctx *basic.ExeElasticSQLCtx) elastic.Query {
 	var queryBuilder elastic.Query
 	if expr, ok := e.(*LogicExpression); ok {
 		queryBuilder = expr.ToQueryBuilder()
@@ -18,13 +24,12 @@ func  AdaptToQueryBuilder(e Expression,ctx *basic.ExeElasticSQLCtx) elastic.Quer
 		//	// AND OR
 		//	queryBuilder = expr.ToQueryBuilder()
 		//}
-	}else if expr, ok := e.(IComparableExpression); ok{
+	} else if expr, ok := e.(IComparableExpression); ok {
 		// 单个条件表达式
 		queryBuilder = AdaptSingleComparableExpression(expr)
 	} else {
 		queryBuilder = e.ToQueryBuilder()
 	}
-
 
 	//if queryBuilder!=nil{
 	//	if e.GetNeedScore() == false{
@@ -34,12 +39,11 @@ func  AdaptToQueryBuilder(e Expression,ctx *basic.ExeElasticSQLCtx) elastic.Quer
 	return queryBuilder
 }
 
-
 func AdaptSingleComparableExpression(compareExpr IComparableExpression) elastic.Query {
 	var query elastic.Query
 	if compareExpr.GetNot() == true {
 		boolQueryBuilder := elastic.NewBoolQuery()
-		query= boolQueryBuilder.MustNot(compareExpr.ToQueryBuilder())
+		query = boolQueryBuilder.MustNot(compareExpr.ToQueryBuilder())
 	} else {
 		if compareExpr.GetNeedScore() {
 			query = compareExpr.ToQueryBuilder()

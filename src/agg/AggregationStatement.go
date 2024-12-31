@@ -1,3 +1,9 @@
+/*
+ *  Copyright 2020-present Doobetter. All rights reserved.
+ *  Use of this source code is governed by a MIT-license.
+ *
+ */
+
 package agg
 
 import (
@@ -8,33 +14,31 @@ import (
 
 type AggregationStatement struct {
 	basic.ProcessUnit
-	Where    grammer.Expression // filter aggregation
+	Where grammer.Expression // filter aggregation
 
 	firstAgg AggregationAdapter
-	Metrics []*MetricAggregationAdapter
-	Buckets []*BucketAggregationAdapter
-	topN int  // 获取桶数
-	Export  *grammer.ExportClause
-
+	Metrics  []*MetricAggregationAdapter
+	Buckets  []*BucketAggregationAdapter
+	topN     int // 获取桶数
+	Export   *grammer.ExportClause
 }
 
-
 // AddAggregationBuilder 将adapter写入SearchSourceBuilder
-func (a *AggregationStatement)AddAggregationBuilder(searchSource *elastic.SearchSource){
+func (a *AggregationStatement) AddAggregationBuilder(searchSource *elastic.SearchSource) {
 	//var lastBucket elastic.Aggregations
-	if len(a.Buckets)>0{
-		 bucket := a.Buckets[0]
-		 searchSource.Aggregation( bucket.AggName, bucket.ToAggregationBuilder())
+	if len(a.Buckets) > 0 {
+		bucket := a.Buckets[0]
+		searchSource.Aggregation(bucket.AggName, bucket.ToAggregationBuilder())
 	}
 }
 
-func (a* AggregationStatement) ParseResult(searchResult *elastic.SearchResult) *basic.ResultSet {
+func (a *AggregationStatement) ParseResult(searchResult *elastic.SearchResult) *basic.ResultSet {
 	resultSet := basic.NewResultSet(a.Name)
 
-	aggs:=  searchResult.Aggregations
+	aggs := searchResult.Aggregations
 
 	total := searchResult.TotalHits()
-	if total <=0 || aggs == nil{
+	if total <= 0 || aggs == nil {
 		resultSet.ErrMsg = "QUERY记录数为0, 没有AGGS"
 		resultSet.Count = 0
 		return resultSet
@@ -42,15 +46,14 @@ func (a* AggregationStatement) ParseResult(searchResult *elastic.SearchResult) *
 
 	var rows []map[string]interface{}
 
-
-	if a.firstAgg.IsBucket(){
+	if a.firstAgg.IsBucket() {
 		// TODO 判断是否是filteAgg
 
-	}else {
-		row:= make(map[string]interface{})
-		adapter:=a.firstAgg.(*MetricAggregationAdapter)
-		ParseMetricResult(row,adapter,aggs)
-		if len(row) >0{
+	} else {
+		row := make(map[string]interface{})
+		adapter := a.firstAgg.(*MetricAggregationAdapter)
+		ParseMetricResult(row, adapter, aggs)
+		if len(row) > 0 {
 			rows = append(rows, row)
 		}
 	}

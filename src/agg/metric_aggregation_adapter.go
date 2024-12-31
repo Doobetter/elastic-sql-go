@@ -1,3 +1,9 @@
+/*
+ *  Copyright 2020-present Doobetter. All rights reserved.
+ *  Use of this source code is governed by a MIT-license.
+ *
+ */
+
 package agg
 
 import (
@@ -9,38 +15,38 @@ type MetricAggregationAdapterI interface {
 	// GetMetricValue 获取结果值
 	GetMetricValue(aggOfParent elastic.Aggregations) interface{}
 	// GetSchemaName 获取输出字段名
-	GetSchemaName()string
+	GetSchemaName() string
 	Next() MetricAggregationAdapterI
 }
 
 type MetricAggregationAdapter struct {
-	AggName string
-	Field string
-	metricName string
-	metricAS string
+	AggName     string
+	Field       string
+	metricName  string
+	metricAS    string
 	metricParam map[string]interface{}
-	next MetricAggregationAdapterI
+	next        MetricAggregationAdapterI
 }
 
-func (a * MetricAggregationAdapter) Next()MetricAggregationAdapterI{
+func (a *MetricAggregationAdapter) Next() MetricAggregationAdapterI {
 	return a.next
 }
 
-func (a * MetricAggregationAdapter) GetSchemaName()string{
-	if a.metricAS == ""{
+func (a *MetricAggregationAdapter) GetSchemaName() string {
+	if a.metricAS == "" {
 		return a.metricName
 	}
 	return a.metricAS
 }
 
-func (a * MetricAggregationAdapter) GenAggName() string  {
+func (a *MetricAggregationAdapter) GenAggName() string {
 
-	if a.metricAS != ""{
+	if a.metricAS != "" {
 		a.AggName = a.metricName
-	}else {
-		a.AggName = "agg_m_" + a.metricName + "_" + strings.ReplaceAll(a.Field,".","_")
+	} else {
+		a.AggName = "agg_m_" + a.metricName + "_" + strings.ReplaceAll(a.Field, ".", "_")
 	}
-	return a.AggName;
+	return a.AggName
 }
 func (a *MetricAggregationAdapter) IsBucket() bool {
 	return false
@@ -49,11 +55,9 @@ func (a *MetricAggregationAdapter) GetMetricValue(aggOfParent elastic.Aggregatio
 	return nil
 }
 
-
-
 // ParseMetricResult 解析
-func  ParseMetricResult(row map[string]interface{},adapter MetricAggregationAdapterI, aggOfParent elastic.Aggregations)  {
-	metric:=adapter
+func ParseMetricResult(row map[string]interface{}, adapter MetricAggregationAdapterI, aggOfParent elastic.Aggregations) {
+	metric := adapter
 	for true {
 		if metric == nil {
 			break
@@ -63,30 +67,28 @@ func  ParseMetricResult(row map[string]interface{},adapter MetricAggregationAdap
 	}
 }
 
-
-
-func GetInstanceFromMetricName(metricName string) MetricAggregationAdapterI{
+func GetInstanceFromMetricName(metricName string) MetricAggregationAdapterI {
 	switch metricName {
-	case "sum" :
-			return new(SumAggregationAdapter)
+	case "sum":
+		return new(SumAggregationAdapter)
 	}
 	return nil
 }
 
-
 type SumAggregationAdapter struct {
 	MetricAggregationAdapter
 }
+
 func (a *SumAggregationAdapter) ToAggregationBuilder() elastic.Aggregation {
 	return elastic.NewSumAggregation().Field(a.Field)
 
 }
 
-func (a * SumAggregationAdapter) GetMetricValue(aggOfParent elastic.Aggregations) interface{} {
-	sum,found:=aggOfParent.Sum(a.AggName)
-	if found == false{
+func (a *SumAggregationAdapter) GetMetricValue(aggOfParent elastic.Aggregations) interface{} {
+	sum, found := aggOfParent.Sum(a.AggName)
+	if found == false {
 		return float32(0)
-	}else{
+	} else {
 		return sum.Value
 	}
 }

@@ -1,3 +1,9 @@
+/*
+ *  Copyright 2020-present Doobetter. All rights reserved.
+ *  Use of this source code is governed by a MIT-license.
+ *
+ */
+
 package parser
 
 import "github.com/antlr4-go/antlr/v4"
@@ -23,8 +29,9 @@ type ParseErrorListener struct {
 	antlr.DefaultErrorListener
 	mySQL string
 }
-func  NewParseErrorListener(mySQL string) *ParseErrorListener{
-	p:=new(ParseErrorListener)
+
+func NewParseErrorListener(mySQL string) *ParseErrorListener {
+	p := new(ParseErrorListener)
 	p.mySQL = mySQL
 	return p
 }

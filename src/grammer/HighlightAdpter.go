@@ -1,3 +1,9 @@
+/*
+ *  Copyright 2020-present Doobetter. All rights reserved.
+ *  Use of this source code is governed by a MIT-license.
+ *
+ */
+
 package grammer
 
 import "github.com/olivere/elastic/v7"
@@ -5,7 +11,7 @@ import "github.com/olivere/elastic/v7"
 type HighlightAdapter struct {
 	FieldAndSchema    map[string]string
 	FieldSchema       []string // as
-	Tag               string // 与filed对应
+	Tag               string   // 与filed对应
 	FragmentSize      int
 	NumberOfFragments int
 	NoMatchSize       int

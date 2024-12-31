@@ -1,3 +1,9 @@
+/*
+ *  Copyright 2020-present Doobetter. All rights reserved.
+ *  Use of this source code is governed by a MIT-license.
+ *
+ */
+
 package query
 
 import (
@@ -245,18 +251,17 @@ func (s *QueryStatement) SetFetchSourceAndSchema() {
 	}
 	// for 脚本生成字段
 	//TODO
-	if s.Export!=nil{
+	if s.Export != nil {
 		s.Export.FetchCode = s.fetchCode
 		s.Export.ResetFields(s.resultSchema)
 	}
 
-
 }
 
-//ParseSearchResultData 将SearchResult解析到 []map
+// ParseSearchResultData 将SearchResult解析到 []map
 func (s *QueryStatement) ParseSearchResultData(sr *elastic.SearchResult) []map[string]interface{} {
 	var data []map[string]interface{}
-	if sr == nil{
+	if sr == nil {
 		return data
 	}
 	hits := sr.Hits.Hits

@@ -1,3 +1,9 @@
+/*
+ *  Copyright 2020-present Doobetter. All rights reserved.
+ *  Use of this source code is governed by a MIT-license.
+ *
+ */
+
 package common
 
 import (
@@ -30,15 +36,15 @@ func MaxInt(x, y int) int {
 	return y
 }
 
-func Float32ToString(f float32)string{
+func Float32ToString(f float32) string {
 	return strconv.FormatFloat(float64(f), 'E', -1, 32)
 }
-func Float64ToString(f float64)string{
+func Float64ToString(f float64) string {
 	return strconv.FormatFloat(float64(f), 'E', -1, 64)
 }
 
 func IsTypeOf(unkown interface{}, typeName string) bool {
-	if _,ok:=reflect.TypeOf(unkown).FieldByName(typeName);ok{
+	if _, ok := reflect.TypeOf(unkown).FieldByName(typeName); ok {
 		return ok
 	}
 	return false
