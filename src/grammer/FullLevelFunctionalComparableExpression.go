@@ -183,17 +183,18 @@ func (e *FullLevelFunctionalComparableExpression) buildMultiMatchQueryBuilder() 
 	return query
 }
 
+//buildKnnQueryBuilder  OpenSearch KnnQuery
 func (e *FullLevelFunctionalComparableExpression) buildKnnQueryBuilder() elastic.Query {
-	f:=e.Props["field"].(string)
+	f := e.Props["field"].(string)
 	qs := map[string]interface{}{
-		"knn" : map[string]interface{}{
+		"knn": map[string]interface{}{
 			f: map[string]interface{}{
 				"vector": e.Props["vector"],
-				"k": e.Props["k"],
+				"k":      e.Props["k"],
 			},
 		},
 	}
-	source,_:= json.Marshal(qs)
+	source, _ := json.Marshal(qs)
 
 	// wrapper api 必须使用base64 encoded string， 使用RawStringQuery代替
 	//return elastic.NewWrapperQuery(base64.StdEncoding.EncodeToString(source))

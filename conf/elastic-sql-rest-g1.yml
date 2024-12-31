@@ -1,0 +1,23 @@
+################ elasticsearch client 相关配置 g1 版本 8.2.3##################
+es_client:
+  http_hosts: [http://recmd.search.sina.com.cn:9201]
+  username: nlp
+  password: nlp123
+
+# query statement 默认返回结果条数
+query:
+  default_size: 5
+  scroll_size: 5000
+  scroll_keep_time: 300000
+  scroll_slice_max: 10
+  scroll_slice_threshold: 100000
+
+agg:
+  # aggregation statement 默认分组数
+  default_size: 200
+  # aggregation statement distinct 的精确度
+  distinct_precision: 3000
+
+
+# 数据获取存储位置
+data_dir: /Users/liucheng/workspace_idea/elastic-sql-rest-7/data

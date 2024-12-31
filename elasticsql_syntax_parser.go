@@ -25,43 +25,43 @@ func NewMyElasticVisitor(SQL string, elasticSQL *basic.ExeElasticSQLCtx) *MyElas
 	return visitor
 }
 
-func (p *MyElasticVisitor) VisitElasticSQL(ctx *parser.ElasticSQLContext) interface{} {
-	if p.ElasticSQL == nil {
-		p.ElasticSQL = basic.NewExeElasticSQLCtx()
-		p.ElasticSQL.SQL = p.Sql
+func (v *MyElasticVisitor) VisitElasticSQL(ctx *parser.ElasticSQLContext) interface{} {
+	if v.ElasticSQL == nil {
+		v.ElasticSQL = basic.NewExeElasticSQLCtx()
+		v.ElasticSQL.SQL = v.Sql
 	}
 
 	//ctx.AllStatement()
 	stats := ctx.GetStatements()
 	//stats := ctx.AllStatement()
 	for _, stat := range stats {
-		//statement := stat.Accept(p).(basic.Statement)
-		statement := p.VisitStatement(stat.GetChild(0).(antlr.ParseTree)).(basic.Statement)
-		p.ElasticSQL.AddStatement(statement.GetName(), statement)
-		//p.VisitStatement(stat.GetChild(0).(antlr.ParseTree))
+		//statement := stat.Accept(v).(basic.Statement)
+		statement := v.VisitStatement(stat.GetChild(0).(antlr.ParseTree)).(basic.Statement)
+		v.ElasticSQL.AddStatement(statement.GetName(), statement)
+		//v.VisitStatement(stat.GetChild(0).(antlr.ParseTree))
 
 	}
-	if len(p.ElasticSQL.ProcessUnitsMap) <= 0 {
-		panic("解析出的STATEMENT个数为0, SQL=" + p.Sql)
+	if len(v.ElasticSQL.ProcessUnitsMap) <= 0 {
+		panic("解析出的STATEMENT个数为0, SQL=" + v.Sql)
 	}
 
-	return p.ElasticSQL
+	return v.ElasticSQL
 }
 
-func (p *MyElasticVisitor) VisitStatement(tree antlr.ParseTree) interface{} {
+func (v *MyElasticVisitor) VisitStatement(tree antlr.ParseTree) interface{} {
 	// todo other statement
 	switch val := tree.(type) {
 	case *parser.QueryStatementContext:
-		return p.VisitQueryStatement(val)
+		return v.VisitQueryStatement(val)
 	case *parser.AggStatementContext:
-		return p.VisitAggStatement(val)
+		return v.VisitAggStatement(val)
 	default:
 		panic("Unknown context")
 	}
 	return nil
 }
 
-func (p *MyElasticVisitor) VisitQueryStatement(ctx *parser.QueryStatementContext) interface{} {
+func (v *MyElasticVisitor) VisitQueryStatement(ctx *parser.QueryStatementContext) interface{} {
 	stat := query.NewQueryStatement()
 
 	// scroll
@@ -99,24 +99,24 @@ func (p *MyElasticVisitor) VisitQueryStatement(ctx *parser.QueryStatementContext
 			}
 			sfCtx := item.ScriptField().(*parser.ScriptFieldContext)
 			as := sfCtx.GetAs().GetText()
-			scriptAdapter := p.VisitScriptPhrase(sfCtx.GetScript().(*parser.ScriptPhraseContext)).(*grammer.ScriptAdapter)
+			scriptAdapter := v.VisitScriptPhrase(sfCtx.GetScript().(*parser.ScriptPhraseContext)).(*grammer.ScriptAdapter)
 			stat.ExprFields[as] = scriptAdapter
 		}
 	}
 
 	for _, indexCtx := range ctx.GetIndexes() {
 
-		indexName := p.VisitIndexName(indexCtx.GetIndex().(*parser.IndexNameContext)).(string)
+		indexName := v.VisitIndexName(indexCtx.GetIndex().(*parser.IndexNameContext)).(string)
 		stat.Indexes = append(stat.Indexes, indexName)
 		// other impl
-		//stat.Indexes = append(stat.Indexes, p.VisitIndexName(indexCtx.GetChild(0).(*parser.IndexNameContext)).(string))
+		//stat.Indexes = append(stat.Indexes, v.VisitIndexName(indexCtx.GetChild(0).(*parser.IndexNameContext)).(string))
 	}
 	if ctx.GetScroll_id() != nil {
 		stat.ScrollId = quotaStr(ctx.GetScroll_id().GetText())
 	} else {
 		// for where conditions
 		if ctx.WhereExpression() != nil {
-			stat.Where = p.VisitWhereExpression(ctx.WhereExpression().(*parser.WhereExpressionContext)).(grammer.Expression)
+			stat.Where = v.VisitWhereExpression(ctx.WhereExpression().(*parser.WhereExpressionContext)).(grammer.Expression)
 			if ctx.SCORE() != nil {
 				needScore, _ := strconv.ParseBool(ctx.GetScore().GetText())
 				stat.Where.SetNeedScore(needScore)
@@ -124,13 +124,13 @@ func (p *MyElasticVisitor) VisitQueryStatement(ctx *parser.QueryStatementContext
 			// todo custom score & rescore
 		}
 		if ctx.CollapseExpr() != nil {
-			stat.Collapse = p.Visit(ctx.CollapseExpr()).(*grammer.CollapseAdapter)
+			stat.Collapse = v.Visit(ctx.CollapseExpr()).(*grammer.CollapseAdapter)
 		}
 
 		// order by
 		var sortBys []*grammer.SortAdapter
 		for _, sort := range ctx.GetSorts() {
-			sortBys = append(sortBys, p.VisitSortItem(sort.(*parser.SortItemContext)).(*grammer.SortAdapter))
+			sortBys = append(sortBys, v.VisitSortItem(sort.(*parser.SortItemContext)).(*grammer.SortAdapter))
 		}
 		stat.SortBys = sortBys
 
@@ -154,15 +154,15 @@ func (p *MyElasticVisitor) VisitQueryStatement(ctx *parser.QueryStatementContext
 
 		}
 		if n := ctx.ExportStatement(); n != nil {
-			stat.Export = p.VisitExportStatement(n.(*parser.ExportStatementContext)).(*grammer.ExportClause)
+			stat.Export = v.VisitExportStatement(n.(*parser.ExportStatementContext)).(*grammer.ExportClause)
 			stat.Add(basic.PostProcessEnumVIAEXPORT)
 		}
 
 	}
 	if ctx.GetStatName() != nil {
 		mapName := ctx.GetStatName().GetText()
-		stat.GenUniqName(mapName, p.unitSequence)
-		p.unitSequence++
+		stat.GenUniqName(mapName, v.unitSequence)
+		v.unitSequence++
 	}
 
 	return stat
@@ -181,7 +181,7 @@ func (v *MyElasticVisitor) VisitStr(ctx *parser.StrContext) interface{} {
 	return ctx.GetText()
 }
 
-func (p *MyElasticVisitor) VisitIndexName(ctx *parser.IndexNameContext) interface{} {
+func (v *MyElasticVisitor) VisitIndexName(ctx *parser.IndexNameContext) interface{} {
 	if ctx.QUOTASTR() != nil {
 		return quotaStr(ctx.GetText())
 	}
